@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package sf.worker.v1;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/streamingfast/sf-saas-priv/pb/sf/worker/v1;pbworker";
+
+service WorkerPool {
+  rpc WorkersState(WorkersStateRequest) returns (WorkersStateResponse);
+  rpc BorrowWorker(BorrowWorkerRequest) returns (BorrowWorkerResponse);
+  rpc KeepAlive(KeepAliveRequest)  returns (KeepAliveResponse);
+  rpc ReturnWorker(ReturnWorkerRequest) returns (ReturnWorkerResponse);
+}
+
+
+message WorkersStateRequest {
+  string user_id = 1;
+  int64 max_workers = 2;
+}
+
+message WorkersStateResponse {
+  WorkersState worker_state = 1;
+}
+
+
+message BorrowWorkerRequest {
+  string user_id = 1;
+  string trace_id = 2;
+  int64 max_worker_for_trace_id = 3;
+}
+
+message BorrowWorkerResponse {
+  enum BorrowStatus {
+    unset = 0;
+    borrowed = 1;
+    resource_exhausted =2;
+  }
+  string worker_key = 1;
+  BorrowStatus status = 2;
+}
+
+message KeepAliveRequest {
+  string worker_key = 1;
+}
+
+
+message KeepAliveResponse {
+  enum Status {
+    unset = 0;
+    ttl_extended = 1;
+  }
+  Status status =1;
+}
+
+message ReturnWorkerRequest {
+  string worker_key = 1;
+}
+
+message ReturnWorkerResponse {}
+
+message WorkersState {
+  int64 available_workers = 1;
+  int64 borrowed_workers = 2;
+  int64 max_workers = 3;
+
+  int64 active_request =10;
+
+  map<string, int64> worker_count_per_trace_id =20;
+
+}

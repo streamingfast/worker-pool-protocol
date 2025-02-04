@@ -1,0 +1,17 @@
+version: v1
+plugins:
+  - plugin: buf.build/protocolbuffers/go:v1.31.0
+    out: ../pb
+    opt: paths=source_relative
+
+  - plugin: buf.build/grpc/go:v1.3.0
+    out: ../pb
+    opt: paths=source_relative
+
+  - plugin: buf.build/connectrpc/go:v1.15.0
+    out: ../pb
+    opt: paths=source_relative
+
+  - plugin: go-grpc-mock
+    out: ../pb
+    opt: paths=source_relative
