@@ -4,7 +4,6 @@ go 1.23.4
 
 require (
 	connectrpc.com/connect v1.18.1
-	github.com/streamingfast/sf-saas-priv v0.0.0-20250130144844-6fd58883efa8
 	go.uber.org/mock v0.5.0
 	google.golang.org/grpc v1.70.0
 	google.golang.org/protobuf v1.36.4

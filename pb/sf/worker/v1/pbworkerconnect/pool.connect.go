@@ -8,7 +8,7 @@ import (
 	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
-	v1 "github.com/streamingfast/sf-saas-priv/pb/sf/worker/v1"
+	v1 "github.com/streamingfast/worker-pool-protocol/pb/sf/worker/v1"
 	http "net/http"
 	strings "strings"
 )

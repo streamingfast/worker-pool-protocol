@@ -5,7 +5,7 @@ package sf.worker.v1;
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/streamingfast/sf-saas-priv/pb/sf/worker/v1;pbworker";
+option go_package = "github.com/streamingfast/worker-pool-protocol/pb/sf/worker/v1;pbworker";
 
 service WorkerPool {
   rpc WorkersState(WorkersStateRequest) returns (WorkersStateResponse);
