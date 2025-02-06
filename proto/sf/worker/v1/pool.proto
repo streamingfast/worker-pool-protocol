@@ -27,8 +27,9 @@ message WorkersStateResponse {
 
 message BorrowWorkerRequest {
   string user_id = 1;
-  string trace_id = 2;
-  int64 max_worker_for_trace_id = 3;
+  string api_key = 2;
+  string trace_id = 3;
+  int64 max_worker_for_trace_id = 4;
 }
 
 message BorrowWorkerResponse {
