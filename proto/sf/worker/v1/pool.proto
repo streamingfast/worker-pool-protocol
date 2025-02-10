@@ -40,6 +40,7 @@ message BorrowWorkerResponse {
   }
   string worker_key = 1;
   BorrowStatus status = 2;
+  WorkersState workerState =3;
 }
 
 message KeepAliveRequest {
