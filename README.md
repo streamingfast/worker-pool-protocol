@@ -1,5 +1,3 @@
-# worker-pool-protocol
-
 # Worker Pool Protocol
 
 ## Overview
