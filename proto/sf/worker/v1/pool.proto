@@ -16,20 +16,21 @@ service WorkerPool {
 
 
 message WorkersStateRequest {
-  string user_id = 1;
-  int64 max_workers = 2;
+  string service = 1;
+  string user_id = 2;
+  int64 max_workers = 3;
 }
 
 message WorkersStateResponse {
   WorkersState worker_state = 1;
 }
 
-
 message BorrowWorkerRequest {
-  string user_id = 1;
-  string api_key = 2;
-  string trace_id = 3;
-  int64 max_worker_for_trace_id = 4;
+  string service = 1; //Firehose, Substreams ....
+  string user_id = 2;
+  string api_key = 3;
+  string trace_id = 4;
+  int64 max_worker_for_trace_id = 5;
 }
 
 message BorrowWorkerResponse {
