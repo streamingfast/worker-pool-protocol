@@ -54,9 +54,15 @@ var (
 
 // WorkerPoolClient is a client for the sf.worker.v1.WorkerPool service.
 type WorkerPoolClient interface {
+	// Return the current worker state for a user/service pair.
 	WorkersState(context.Context, *connect.Request[v1.WorkersStateRequest]) (*connect.Response[v1.WorkersStateResponse], error)
+	// Create and register a `worker key` for the user service that needs to access a service.
+	// If there no more worker available for a user/service pair it should return a response with status `resource_exhausted`.
+	// Otherwise it should return a response with `worker key` and a status `borrowed`
 	BorrowWorker(context.Context, *connect.Request[v1.BorrowWorkerRequest]) (*connect.Response[v1.BorrowWorkerResponse], error)
+	// Extend the ttl a worker key. This is useful if your worker keys a store in a database that support ttl
 	KeepAlive(context.Context, *connect.Request[v1.KeepAliveRequest]) (*connect.Response[v1.KeepAliveResponse], error)
+	// Returning a worker should increase the number of worker available for a user/service pair
 	ReturnWorker(context.Context, *connect.Request[v1.ReturnWorkerRequest]) (*connect.Response[v1.ReturnWorkerResponse], error)
 }
 
@@ -127,9 +133,15 @@ func (c *workerPoolClient) ReturnWorker(ctx context.Context, req *connect.Reques
 
 // WorkerPoolHandler is an implementation of the sf.worker.v1.WorkerPool service.
 type WorkerPoolHandler interface {
+	// Return the current worker state for a user/service pair.
 	WorkersState(context.Context, *connect.Request[v1.WorkersStateRequest]) (*connect.Response[v1.WorkersStateResponse], error)
+	// Create and register a `worker key` for the user service that needs to access a service.
+	// If there no more worker available for a user/service pair it should return a response with status `resource_exhausted`.
+	// Otherwise it should return a response with `worker key` and a status `borrowed`
 	BorrowWorker(context.Context, *connect.Request[v1.BorrowWorkerRequest]) (*connect.Response[v1.BorrowWorkerResponse], error)
+	// Extend the ttl a worker key. This is useful if your worker keys a store in a database that support ttl
 	KeepAlive(context.Context, *connect.Request[v1.KeepAliveRequest]) (*connect.Response[v1.KeepAliveResponse], error)
+	// Returning a worker should increase the number of worker available for a user/service pair
 	ReturnWorker(context.Context, *connect.Request[v1.ReturnWorkerRequest]) (*connect.Response[v1.ReturnWorkerResponse], error)
 }
 

@@ -8,16 +8,23 @@ import "google/protobuf/timestamp.proto";
 option go_package = "github.com/streamingfast/worker-pool-protocol/pb/sf/worker/v1;pbworker";
 
 service WorkerPool {
+  // Return the current worker state for a user/service pair.
   rpc WorkersState(WorkersStateRequest) returns (WorkersStateResponse);
+  // Create and register a `worker key` for the user service that needs to access a service.
+  // If there no more worker available for a user/service pair it should return a response with status `resource_exhausted`.
+  // Otherwise it should return a response with `worker key` and a status `borrowed`
   rpc BorrowWorker(BorrowWorkerRequest) returns (BorrowWorkerResponse);
+  // Extend the ttl a worker key. This is useful if your worker keys a store in a database that support ttl
   rpc KeepAlive(KeepAliveRequest)  returns (KeepAliveResponse);
+  // Returning a worker should increase the number of worker available for a user/service pair
   rpc ReturnWorker(ReturnWorkerRequest) returns (ReturnWorkerResponse);
 }
 
 message WorkersStateRequest {
+  // Name of the service for which you want to manage a worker pool
   string service = 1;
+  // User identification for which you want the state
   string user_id = 2;
-  int64 max_workers = 3;
 }
 
 message WorkersStateResponse {
@@ -25,25 +32,37 @@ message WorkersStateResponse {
 }
 
 message BorrowWorkerRequest {
-  string service = 1; //Firehose, Substreams ....
+  // Name of the service for which you want to manage a worker pool
+  string service = 1;
+  // User identification of the user requesting a worker
   string user_id = 2;
+  // Api key of the user requesting a worker
   string api_key = 3;
+  // Unique external request id. Workers can be limited per external request id / trace id
   string trace_id = 4;
+  // This is to override the maximum available worker (for a user) for a specific request. Useful to distribute worker across
+  // multi request so that request do not receive all the worker at once
   int64 max_worker_for_trace_id = 5;
 }
 
 message BorrowWorkerResponse {
   enum BorrowStatus {
     unset = 0;
+    // worker has been granted
     borrowed = 1;
+    // no more worker available for user/service/request
     resource_exhausted =2;
   }
+  // Unique worker identification
   string worker_key = 1;
+  // Status of the current borrow request
   BorrowStatus status = 2;
+  // State worker pool for the user/service pair
   WorkersState workerState =3;
 }
 
 message KeepAliveRequest {
+  // Unique worker identification for which you want to increase the ttl
   string worker_key = 1;
 }
 
@@ -51,23 +70,30 @@ message KeepAliveResponse {
   enum Status {
     unset = 0;
     ttl_extended = 1;
+    failed = 2;
   }
+  // Status of the current keep alice request
   Status status =1;
 }
 
 message ReturnWorkerRequest {
+  // Unique worker identification that is retuning to the pool
   string worker_key = 1;
 }
 
 message ReturnWorkerResponse {}
 
 message WorkersState {
+  // Number of worker available to a user/service pair
   int64 available_workers = 1;
+  // Number of worker granted to a user/service pair
   int64 borrowed_workers = 2;
+  // Maximum workers available user/service pair
   int64 max_workers = 3;
+  // Number of active request / trace id
+  int64 active_trace_id = 10;
 
-  int64 active_request =10;
-
-  map<string, int64> worker_count_per_trace_id =20;
+  // Worker count per request / trace id
+  map<string, int64> worker_count_per_trace_id = 20;
 
 }
