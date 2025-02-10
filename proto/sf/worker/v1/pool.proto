@@ -14,7 +14,6 @@ service WorkerPool {
   rpc ReturnWorker(ReturnWorkerRequest) returns (ReturnWorkerResponse);
 }
 
-
 message WorkersStateRequest {
   string service = 1;
   string user_id = 2;
@@ -47,7 +46,6 @@ message BorrowWorkerResponse {
 message KeepAliveRequest {
   string worker_key = 1;
 }
-
 
 message KeepAliveResponse {
   enum Status {
