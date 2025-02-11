@@ -37,7 +37,7 @@ message BorrowWorkerRequest {
   // User identification of the user requesting a worker
   string user_id = 2;
   // Api key of the user requesting a worker
-  string api_key = 3;
+  string api_key_id = 3;
   // Unique external request id. Workers can be limited per external request id / trace id
   string trace_id = 4;
   // This is to override the maximum available worker (for a user) for a specific request. Useful to distribute worker across
