@@ -89,9 +89,10 @@ message ReturnWorkerRequest {
 message ReturnWorkerResponse {
   enum Status {
     unset = 0;
-    returned = 1;
-    ttl_updated = 2;
-    failed = 3;
+    missing_key = 1;
+    returned = 2;
+    ttl_updated = 3;
+    failed = 4;
   }
   Status status = 1;
 }
