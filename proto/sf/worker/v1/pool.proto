@@ -86,7 +86,15 @@ message ReturnWorkerRequest {
 
 }
 
-message ReturnWorkerResponse {}
+message ReturnWorkerResponse {
+  enum Status {
+    unset = 0;
+    returned = 1;
+    ttl_updated = 2;
+    failed = 3;
+  }
+  Status status = 1;
+}
 
 message WorkersState {
   // Number of worker available to a user/service pair
