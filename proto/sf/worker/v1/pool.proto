@@ -60,6 +60,8 @@ message BorrowWorkerResponse {
   BorrowStatus status = 2;
   // State worker pool for the user/service pair
   WorkersState workerState =3;
+
+  google.protobuf.Duration minimal_worker_life_duration = 4;
 }
 
 message KeepAliveRequest {
