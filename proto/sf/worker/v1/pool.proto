@@ -26,6 +26,8 @@ message WorkersStateRequest {
   string service = 1;
   // User identification for which you want the state
   string user_id = 2;
+  // Api key of the user requesting the state
+  string api_key_id = 3;
 }
 
 message WorkersStateResponse {
