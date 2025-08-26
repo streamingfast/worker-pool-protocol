@@ -59,8 +59,14 @@ type WorkerPoolClient interface {
 	// Create and register a `worker key` for the user service that needs to access a service.
 	// If there no more worker available for a user/service pair it should return a response with status `resource_exhausted`.
 	// Otherwise it should return a response with `worker key` and a status `borrowed`
+	// If the user has exceeded his resource consumption (other than the pool, ex: bytes, requests, blocks...),
+	//
+	//	an error will be returned with code ResourceExhausted
 	BorrowWorker(context.Context, *connect.Request[v1.BorrowWorkerRequest]) (*connect.Response[v1.BorrowWorkerResponse], error)
 	// Extend the ttl a worker key. This is useful if your worker keys a store in a database that support ttl
+	// If the user has exceeded his resource consumption (other than the pool, ex: bytes, requests, blocks...),
+	//
+	//	an error will be returned with code ResourceExhausted
 	KeepAlive(context.Context, *connect.Request[v1.KeepAliveRequest]) (*connect.Response[v1.KeepAliveResponse], error)
 	// Returning a worker should increase the number of worker available for a user/service pair
 	ReturnWorker(context.Context, *connect.Request[v1.ReturnWorkerRequest]) (*connect.Response[v1.ReturnWorkerResponse], error)
@@ -138,8 +144,14 @@ type WorkerPoolHandler interface {
 	// Create and register a `worker key` for the user service that needs to access a service.
 	// If there no more worker available for a user/service pair it should return a response with status `resource_exhausted`.
 	// Otherwise it should return a response with `worker key` and a status `borrowed`
+	// If the user has exceeded his resource consumption (other than the pool, ex: bytes, requests, blocks...),
+	//
+	//	an error will be returned with code ResourceExhausted
 	BorrowWorker(context.Context, *connect.Request[v1.BorrowWorkerRequest]) (*connect.Response[v1.BorrowWorkerResponse], error)
 	// Extend the ttl a worker key. This is useful if your worker keys a store in a database that support ttl
+	// If the user has exceeded his resource consumption (other than the pool, ex: bytes, requests, blocks...),
+	//
+	//	an error will be returned with code ResourceExhausted
 	KeepAlive(context.Context, *connect.Request[v1.KeepAliveRequest]) (*connect.Response[v1.KeepAliveResponse], error)
 	// Returning a worker should increase the number of worker available for a user/service pair
 	ReturnWorker(context.Context, *connect.Request[v1.ReturnWorkerRequest]) (*connect.Response[v1.ReturnWorkerResponse], error)

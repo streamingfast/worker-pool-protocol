@@ -11,12 +11,19 @@ option go_package = "github.com/streamingfast/worker-pool-protocol/pb/sf/worker/
 service WorkerPool {
   // Return the current worker state for a user/service pair.
   rpc WorkersState(WorkersStateRequest) returns (WorkersStateResponse);
+
   // Create and register a `worker key` for the user service that needs to access a service.
   // If there no more worker available for a user/service pair it should return a response with status `resource_exhausted`.
   // Otherwise it should return a response with `worker key` and a status `borrowed`
+  // If the user has exceeded his resource consumption (other than the pool, ex: bytes, requests, blocks...),
+  //  an error will be returned with code ResourceExhausted
   rpc BorrowWorker(BorrowWorkerRequest) returns (BorrowWorkerResponse);
+
   // Extend the ttl a worker key. This is useful if your worker keys a store in a database that support ttl
+  // If the user has exceeded his resource consumption (other than the pool, ex: bytes, requests, blocks...),
+  //  an error will be returned with code ResourceExhausted
   rpc KeepAlive(KeepAliveRequest)  returns (KeepAliveResponse);
+
   // Returning a worker should increase the number of worker available for a user/service pair
   rpc ReturnWorker(ReturnWorkerRequest) returns (ReturnWorkerResponse);
 }
@@ -69,6 +76,8 @@ message BorrowWorkerResponse {
 message KeepAliveRequest {
   // Unique worker identification for which you want to increase the ttl
   string worker_key = 1;
+  // ID of the API key used in the request
+  string api_key_id = 2;
 }
 
 message KeepAliveResponse {
@@ -77,7 +86,7 @@ message KeepAliveResponse {
     ttl_extended = 1;
     failed = 2;
   }
-  // Status of the current keep alice request
+  // Status of the current keep alive request
   Status status =1;
 }
 
