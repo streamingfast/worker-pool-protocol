@@ -29,21 +29,21 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type WorkerPoolClient interface {
-	// Return the current worker state for a user/service pair.
+	// Return the current worker state for a organization/service pair.
 	WorkersState(ctx context.Context, in *WorkersStateRequest, opts ...grpc.CallOption) (*WorkersStateResponse, error)
-	// Create and register a `worker key` for the user service that needs to access a service.
-	// If there no more worker available for a user/service pair it should return a response with status `resource_exhausted`.
+	// Create and register a `worker key` for the organization service that needs to access a service.
+	// If there no more worker available for a organization/service pair it should return a response with status `resource_exhausted`.
 	// Otherwise it should return a response with `worker key` and a status `borrowed`
-	// If the user has exceeded his resource consumption (other than the pool, ex: bytes, requests, blocks...),
+	// If the organization has exceeded his resource consumption (other than the pool, ex: bytes, requests, blocks...),
 	//
 	//	an error will be returned with code ResourceExhausted
 	BorrowWorker(ctx context.Context, in *BorrowWorkerRequest, opts ...grpc.CallOption) (*BorrowWorkerResponse, error)
 	// Extend the ttl a worker key. This is useful if your worker keys a store in a database that support ttl
-	// If the user has exceeded his resource consumption (other than the pool, ex: bytes, requests, blocks...),
+	// If the organization has exceeded his resource consumption (other than the pool, ex: bytes, requests, blocks...),
 	//
 	//	an error will be returned with code ResourceExhausted
 	KeepAlive(ctx context.Context, in *KeepAliveRequest, opts ...grpc.CallOption) (*KeepAliveResponse, error)
-	// Returning a worker should increase the number of worker available for a user/service pair
+	// Returning a worker should increase the number of worker available for a organization/service pair
 	ReturnWorker(ctx context.Context, in *ReturnWorkerRequest, opts ...grpc.CallOption) (*ReturnWorkerResponse, error)
 }
 
@@ -95,21 +95,21 @@ func (c *workerPoolClient) ReturnWorker(ctx context.Context, in *ReturnWorkerReq
 // All implementations must embed UnimplementedWorkerPoolServer
 // for forward compatibility
 type WorkerPoolServer interface {
-	// Return the current worker state for a user/service pair.
+	// Return the current worker state for a organization/service pair.
 	WorkersState(context.Context, *WorkersStateRequest) (*WorkersStateResponse, error)
-	// Create and register a `worker key` for the user service that needs to access a service.
-	// If there no more worker available for a user/service pair it should return a response with status `resource_exhausted`.
+	// Create and register a `worker key` for the organization service that needs to access a service.
+	// If there no more worker available for a organization/service pair it should return a response with status `resource_exhausted`.
 	// Otherwise it should return a response with `worker key` and a status `borrowed`
-	// If the user has exceeded his resource consumption (other than the pool, ex: bytes, requests, blocks...),
+	// If the organization has exceeded his resource consumption (other than the pool, ex: bytes, requests, blocks...),
 	//
 	//	an error will be returned with code ResourceExhausted
 	BorrowWorker(context.Context, *BorrowWorkerRequest) (*BorrowWorkerResponse, error)
 	// Extend the ttl a worker key. This is useful if your worker keys a store in a database that support ttl
-	// If the user has exceeded his resource consumption (other than the pool, ex: bytes, requests, blocks...),
+	// If the organization has exceeded his resource consumption (other than the pool, ex: bytes, requests, blocks...),
 	//
 	//	an error will be returned with code ResourceExhausted
 	KeepAlive(context.Context, *KeepAliveRequest) (*KeepAliveResponse, error)
-	// Returning a worker should increase the number of worker available for a user/service pair
+	// Returning a worker should increase the number of worker available for a organization/service pair
 	ReturnWorker(context.Context, *ReturnWorkerRequest) (*ReturnWorkerResponse, error)
 	mustEmbedUnimplementedWorkerPoolServer()
 }

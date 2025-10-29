@@ -9,31 +9,33 @@ import "google/protobuf/duration.proto";
 option go_package = "github.com/streamingfast/worker-pool-protocol/pb/sf/worker/v1;pbworker";
 
 service WorkerPool {
-  // Return the current worker state for a user/service pair.
+  // Return the current worker state for a organization/service pair.
   rpc WorkersState(WorkersStateRequest) returns (WorkersStateResponse);
 
-  // Create and register a `worker key` for the user service that needs to access a service.
-  // If there no more worker available for a user/service pair it should return a response with status `resource_exhausted`.
+  // Create and register a `worker key` for the organization service that needs to access a service.
+  // If there no more worker available for a organization/service pair it should return a response with status `resource_exhausted`.
   // Otherwise it should return a response with `worker key` and a status `borrowed`
-  // If the user has exceeded his resource consumption (other than the pool, ex: bytes, requests, blocks...),
+  // If the organization has exceeded his resource consumption (other than the pool, ex: bytes, requests, blocks...),
   //  an error will be returned with code ResourceExhausted
   rpc BorrowWorker(BorrowWorkerRequest) returns (BorrowWorkerResponse);
 
   // Extend the ttl a worker key. This is useful if your worker keys a store in a database that support ttl
-  // If the user has exceeded his resource consumption (other than the pool, ex: bytes, requests, blocks...),
+  // If the organization has exceeded his resource consumption (other than the pool, ex: bytes, requests, blocks...),
   //  an error will be returned with code ResourceExhausted
   rpc KeepAlive(KeepAliveRequest)  returns (KeepAliveResponse);
 
-  // Returning a worker should increase the number of worker available for a user/service pair
+  // Returning a worker should increase the number of worker available for a organization/service pair
   rpc ReturnWorker(ReturnWorkerRequest) returns (ReturnWorkerResponse);
 }
 
 message WorkersStateRequest {
   // Name of the service for which you want to manage a worker pool
   string service = 1;
-  // User identification for which you want the state
-  string user_id = 2;
-  // Api key of the user requesting the state
+  // Organization identification for which you want the state, this was
+  // previously called user_id but has been renamed to better reflect its real
+  // underlying data, the wire format hasn't changed for backward compatibility.
+  string organization_id = 2;
+  // Api key of the organization requesting the state
   string api_key_id = 3;
 }
 
@@ -44,13 +46,15 @@ message WorkersStateResponse {
 message BorrowWorkerRequest {
   // Name of the service for which you want to manage a worker pool
   string service = 1;
-  // User identification of the user requesting a worker
-  string user_id = 2;
-  // Api key of the user requesting a worker
+  // Organization identification of the organization requesting a worker, this was
+  // previously called user_id but has been renamed to better reflect its real
+  // underlying data, the wire format hasn't changed for backward compatibility.
+  string organization_id = 2;
+  // Api key of the organization requesting a worker
   string api_key_id = 3;
   // Unique external request id. Workers can be limited per external request id / trace id
   string trace_id = 4;
-  // This is to override the maximum available worker (for a user) for a specific request. Useful to distribute worker across
+  // This is to override the maximum available worker (for a organization) for a specific request. Useful to distribute worker across
   // multi request so that request do not receive all the worker at once
   int64 max_worker_for_trace_id = 5;
 }
@@ -60,15 +64,16 @@ message BorrowWorkerResponse {
     unset = 0;
     // worker has been granted
     borrowed = 1;
-    // no more worker available for user/service/request
-    resource_exhausted =2;
+    // no more worker available for organization/service/request
+    resource_exhausted = 2;
   }
   // Unique worker identification
   string worker_key = 1;
   // Status of the current borrow request
   BorrowStatus status = 2;
-  // State worker pool for the user/service pair
-  WorkersState workerState =3;
+  // State worker pool for the organization/service pair, this was previously
+  // named workerState but was renamed to align with proto3 naming conventions.
+  WorkersState worker_state = 3;
 
   google.protobuf.Duration minimal_worker_life_duration = 4;
 }
@@ -87,7 +92,7 @@ message KeepAliveResponse {
     failed = 2;
   }
   // Status of the current keep alive request
-  Status status =1;
+  Status status = 1;
 }
 
 message ReturnWorkerRequest {
@@ -111,11 +116,11 @@ message ReturnWorkerResponse {
 }
 
 message WorkersState {
-  // Number of worker available to a user/service pair
+  // Number of worker available to a organization/service pair
   int64 available_workers = 1;
-  // Number of worker granted to a user/service pair
+  // Number of worker granted to a organization/service pair
   int64 borrowed_workers = 2;
-  // Maximum workers available user/service pair
+  // Maximum workers available organization/service pair
   int64 max_workers = 3;
   // Number of active request / trace id
   int64 active_trace_id = 10;
